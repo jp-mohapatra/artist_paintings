@@ -1,0 +1,119 @@
+<div class="container">    
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading"><h4 >Artist Profile</h4></div>
+      <div class="panel-body">
+        <div class="col-md-4 col-xs-12 col-sm-6 col-lg-4">
+          <%= image_tag @artist.image.url(:medium) %>
+        </div>
+        <div class="col-md-8 col-xs-12 col-sm-6 col-lg-8" >
+          <div class="container" >
+            <h2><%= @artist.name %></h2>
+            <h4><%= @artist.about %></h4>
+          </div>
+          <hr>
+          <ul class="container details">                    
+            <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span><%= @artist.email %></p></li>
+            <li><p><span class="glyphicon glyphicon-phone" style="width:50px;"></span><%= @artist.phone %></p></li>
+            <li><p><span class="glyphicon glyphicon-map-marker" style="width:50px;"></span><%= ISO3166::Country.find_country_by_alpha2(@artist.country).name if @artist.country?%></p></li>
+            <li><p><span class="glyphicon glyphicon-map-marker" style="width:50px;"></span><%= @artist.state %></p></li>
+          </ul>
+          <hr>
+          <%= link_to "edit profile", edit_profile_path(id: @artist.id), :class => "btn btn-info", "data-toggle" => "modal", "data-target" => "#edit_profile_modal" if @artist.eql? current_user%>
+          	<%= link_to 'Back', "/", class: "btn btn-info"%>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  	<!-- modal for user profile -->
+  	<div class="modal fade" id="edit_profile_modal" role="dialog">
+      <div class="modal-dialog" style="width: 100%;">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Add Album</h4>
+          </div>
+          <div class="modal-body signup_form"></div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="row">
+    	<button type="button" class="btn btn-info btn-lg pull-right" data-toggle="modal" data-target="#painting_modal">Add Painting</button>
+    </div>
+    <div class="row">
+        <%if @artist.paintings.empty?%>
+            <h3>No Paintings Added!!</h3>
+        <%else%>
+        	<%= form_for :paintings, url: mark_public_path(id: @artist.id, make_public: true), html: { multipart: true, id: "public_painting_form"} do |f| %>
+	            	
+	            <% paintins_array = []
+	            if @artist.eql? current_user
+	            	paintins_array = @artist.paintings
+            	else
+	            	paintins_array = @artist.paintings.select { |obj| obj.is_public? }
+        		end%>
+	            <%paintins_array.each do |curr_obj|%>
+	                <div class="col-md-3">
+	                    <div class="thumbnail" style="height: 200px;">
+	                        <div style="height: 70%;" align="center">
+	                            <%= image_tag curr_obj.image? ? curr_obj.image : 'http://placehold.it/320x200', style: "height: 150px;"%>
+	                        </div>
+	                        <div class="caption">
+	                        	<div>
+		                        	<div style="float: left; width: 50%">
+		                          		<h3 align="right">
+		                          			<%= curr_obj.name %>
+		                          		</h3>
+		                          	</div>
+		                          	<div style="float: left; width: 50%">
+		                            	<%= f.check_box "is_public[#{curr_obj.id}]", checked: curr_obj.is_public, class: 'form-control painting_check', style: "margin: 30px;" if @artist.eql? current_user%>
+		                          	</div>
+	                          	</div>
+	                        </div>
+	                    </div>
+	                </div>
+	            <% end %>
+
+	            <%= f.submit "Apply Changes",class: 'btn btn-primary', style: "display:none", id: "check_submit" %>
+            <% end %>
+        <%end%>
+    </div>
+
+    <!-- for painting upload -->
+        <div class="modal fade" id="painting_modal" role="dialog">
+		    <div class="modal-dialog">
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+		          <h4 class="modal-title">Add Painting</h4>
+		        </div>
+		        <div class="modal-body">
+		          	<%@painting = Painting.new%>
+		          	<%= form_for @painting, url: upload_paintings_path(id: @artist.id), html: { multipart: true} do |f| %>
+			          	<%= f.label :name, "Painting Name" %>
+			          	<%= f.text_field :name, class: 'form-control', :required => true %><br/>
+			          	<%= f.label :image, "Painting File" %>
+			          	<%= f.file_field :image, class: 'form-control', :required => true %><br/>
+			          	<%= f.submit "Add Painting",class: 'btn btn-primary'  %>
+			          	<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+	          		<% end %>        
+		        </div>
+		      </div>
+		    </div>
+	  	</div>
+	  	<!-- for painting upload -->
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript">
+	var checkBoxes = $('form .painting_check');
+	checkBoxes.change(function () {
+		$('#check_submit').show();
+	});
+</script>

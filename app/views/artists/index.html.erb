@@ -1,0 +1,25 @@
+<h2>Artists Dashboard</h2>
+
+<div class="jumbotron">
+    <div class="container">
+        <div class="row">
+            <%if @users.empty?%>
+                <h3>No Artists Present!!</h3>
+            <%else%>
+                <%@users.each do |user_obj|%>
+                    <div class="col-md-3">
+                        <div class="thumbnail" style="height: 200px;">
+                            <div style="height: 70%;" align="center">
+                                <%= image_tag user_obj.image? ? user_obj.image : 'http://placehold.it/320x200', style: "height: 150px;"%>
+                            </div>
+                            <div class="caption">
+                              <h3 align="center"><%= link_to user_obj.name, artist_profile_path(id: user_obj.id)%></h3>
+                            </div>
+                        </div>
+                    </div>
+                <% end %>
+            <%end%>
+        </div>
+    </div>
+</div>
+

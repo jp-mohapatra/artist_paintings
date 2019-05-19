@@ -1,0 +1,12 @@
+<% if object.errors.any? %>
+  <div id="error_explanation">
+    <% msg_arr = [] 
+      object.errors.full_messages.each do |msg| %>
+      <% msg_arr << msg %>
+    <% end 
+    flash.now[:alert] = msg_arr.uniq.join(",")%>
+  </div>
+  <% if flash[:alert] %>
+    <p id="notice" style="color: red;"><%= flash[:alert] %></p>
+  <% end %>
+<% end %>

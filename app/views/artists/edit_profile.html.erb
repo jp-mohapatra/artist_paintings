@@ -1,0 +1,147 @@
+<div class="col-sm-6" style="margin-left:300px">
+  <div class="span3 well">
+    <legend>Edit Artist</legend>
+
+    <%= form_for(@artist, url: update_profile_path(id: @artist.try(:id))) do |f| %>
+      <%= render 'shared/error_messages', :object => f.object %>
+      <%#= devise_error_messages! %>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="field">
+            <%= f.label :name %>*<br />
+            <%= f.text_field :name, class: 'form-control', placeholder: "full name", autofocus: true %>
+
+          </div>
+        </div>
+      </div><br/>
+      
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="field">
+            <%= f.label :email %>*<br />
+            <%= f.email_field :email, class: 'form-control' , placeholder: "enter email", autofocus: true %>
+          </div>
+         </div>
+      </div><br/>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :password %>*
+            <% if @minimum_password_length %>
+            <em>(<%= @minimum_password_length %> characters minimum)</em>
+            <% end %><br />
+            <%= f.password_field :password, class: 'form-control' , placeholder: "password", autocomplete: "off"%>
+          </div>
+         </div>
+      </div><br/>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :country %>*<br />
+             <%=f.select :country,  ISO3166::Country.all.sort_alphabetical.collect {|c| [ c.name, c.alpha2 ]}, {:include_blank => '- Select Country -'}, :class=>"form-control", :onchange => 'getStateNames();'%>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :state %>*<br />
+             <%= f.select :state, {}, {:include_blank => '- Select State -'}, :class=>"form-control" %>
+          </div>
+         </div>
+      </div><br/> 
+
+      <div class="row">
+         <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :phone %>*<br />
+            <%= f.text_field :phone,  class: 'form-control', placeholder: "contact number", autofocus: true %>
+          </div>
+         </div>
+         <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :city %>*<br />
+            <%= f.text_field :city,  class: 'form-control', placeholder: "city", autofocus: true %>
+          </div>
+         </div>
+      </div><br/>
+
+      <div class="row">
+        <div class="col-sm-8">
+          <div class="field">
+            <%= f.label :user_name %><br />
+            <%= f.text_field :user_name, class: 'form-control', autofocus: true, placeholder: "user name"%>
+          </div><br />
+         </div>
+      </div><br/>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :image %><br />
+            <%= f.file_field :image,  class: 'form-control', placeholder: "contact number", autofocus: true %>
+          </div>
+         </div>
+      </div><br/>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :about %><br />
+            <%= f.text_area :about,  class: 'form-control', placeholder: "about", autofocus: true %>
+          </div>
+         </div>
+      </div><br/>
+
+      <div class="actions">
+        <%= f.submit "Update", class: 'btn btn-warning'%>
+        <%#= link_to "Cancel","/", class: "btn btn-secondary"%>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div><br />
+    <% end %>
+    <%#= render "devise/shared/links" %>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+  $('#edit_user').validate({ // initialize the plugin
+    rules: {
+      "user[name]": {required: true},
+      "user[email]": {required: true},
+      "user[password]": {required: true},
+      "user[country]": {required: true},
+      "user[state]": {required: true},
+      "user[city]": {required: true},
+      "user[phone]": {required: true},
+    },
+  });
+
+  jQuery.extend(jQuery.validator.messages, {
+    equalTo: "Doesn't match with password!!"
+  });
+
+  $("#user_country").change();
+
+  function getStateNames() {
+    var selectedCountry;
+    $('#user_state').empty().append($("<option></option>").attr("value", '').text('- Select State -'));
+    selectedCountry = $("#user_country option:selected").val();
+    if (selectedCountry === "") {return;}
+    $.ajax({
+      url: "/get_states_by_country_name?country_val=" + selectedCountry,
+      type: 'GET',
+      success: function (result) {
+        $('#user_state').removeClass('hidden');
+        $.each(result, function (key, value) {
+          $('#user_state').append($("<option></option>").attr("value", key).text(value));
+        });
+        <%if @artist.state?%>
+          $('#user_state').val("<%=@artist.state%>")
+        <%end%>
+      }
+    });
+  }
+
+</script>

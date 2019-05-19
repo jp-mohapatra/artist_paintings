@@ -1,0 +1,145 @@
+
+<div class="col-sm-6" style="margin-left:300px">
+  <div class="span3 well">
+    <legend>Sign up</legend>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+      <%= render 'shared/error_messages', :object => f.object %>
+      <%#= devise_error_messages! %>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="field">
+            <%= f.label :name %>*<br />
+            <%= f.text_field :name, class: 'form-control', placeholder: "full name", autofocus: true %>
+
+          </div>
+        </div>
+      </div><br/>
+      
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="field">
+            <%= f.label :email %>*<br />
+            <%= f.email_field :email, class: 'form-control' , placeholder: "enter email", autofocus: true %>
+          </div>
+         </div>
+      </div><br/>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :password %>*
+            <% if @minimum_password_length %>
+            <em>(<%= @minimum_password_length %> characters minimum)</em>
+            <% end %><br />
+            <%= f.password_field :password, class: 'form-control' , placeholder: "password", autocomplete: "off"%>
+          </div>
+         </div>
+
+        <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :password_confirmation %><br />
+            <%= f.password_field :password_confirmation, placeholder: "confirm password", class: 'form-control', autocomplete: "off"%>
+            <%= text_field_tag 'confirm_password', "confirm password doesn't match", class: "hidden form-control"    %>
+          </div>
+        </div>
+      </div><br/>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :country %>*<br />
+             <%=f.select :country,  ISO3166::Country.all.sort_alphabetical.collect {|c| [ c.name, c.alpha2 ]}, {:include_blank => '- Select Country -'}, :class=>"form-control", :onchange => 'getStateNames();'%>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :state %>*<br />
+             <%= f.select :state, {}, {:include_blank => '- Select State -'}, :class=>"form-control" %>
+          </div>
+         </div>
+      </div><br/> 
+
+      <div class="row">
+         <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :phone %>*<br />
+            <%= f.text_field :phone,  class: 'form-control', placeholder: "contact number", autofocus: true %>
+          </div>
+         </div>
+         <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :city %>*<br />
+            <%= f.text_field :city,  class: 'form-control', placeholder: "city", autofocus: true %>
+          </div>
+         </div>
+      </div><br/>
+
+      <div class="row">
+        <div class="col-sm-8">
+          <div class="field">
+            <%= f.label :user_name %><br />
+            <%= f.text_field :user_name, class: 'form-control', autofocus: true, placeholder: "user name"%>
+          </div><br />
+         </div>
+      </div><br/>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="field">
+            <%= f.label :image %><br />
+            <%= f.file_field :image,  class: 'form-control', placeholder: "contact number", autofocus: true %>
+          </div>
+         </div>
+      </div><br/>
+
+      <div class="actions">
+        <%= f.submit "Sign up", class: 'btn btn-warning'%>
+        <%#= link_to "Cancel","/", class: "btn btn-secondary"%>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div><br />
+    <% end %>
+    <%#= render "devise/shared/links" %>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+  $('#new_user').validate({ // initialize the plugin
+    rules: {
+      "user[name]": {required: true},
+      "user[email]": {required: true},
+      "user[password]": {required: true},
+      "user[password_confirmation]": {required: true},
+      "user[password_confirmation]": {equalTo : "#user_password"},
+      "user[country]": {required: true},
+      "user[state]": {required: true},
+      "user[city]": {required: true},
+      "user[phone]": {required: true},
+      "user[image]": {required: true},
+    },
+  });
+
+  jQuery.extend(jQuery.validator.messages, {
+    equalTo: "Doesn't match with password!!"
+  });
+
+  function getStateNames() {
+    var selectedCountry;
+    $('#user_state').empty().append($("<option></option>").attr("value", '').text('- Select State -'));
+    selectedCountry = $("#user_country option:selected").val();
+    if (selectedCountry === "") {return;}
+    $.ajax({
+      url: "/get_states_by_country_name?country_val=" + selectedCountry,
+      type: 'GET',
+      success: function (result) {
+        $('#user_state').removeClass('hidden');
+        $.each(result, function (key, value) {
+          $('#user_state').append($("<option></option>").attr("value", key).text(value));
+        });
+      }
+    });
+  }
+
+</script>

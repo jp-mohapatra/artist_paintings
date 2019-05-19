@@ -1,0 +1,25 @@
+== README
+
+Artist-Paintings
+
+Prerequisite:
+
+* Ruby version: 2.3.8
+
+* Rails version: 4.2.0
+
+* Mysql database
+
+Installation:
+
+* fork it and bundle install all the gems.
+
+* create a database named "mindfire"
+
+* Migrate database by command
+	rake db:migrate
+
+* run the local server by 
+	rails s 
+
+* That's it for the installation:)
