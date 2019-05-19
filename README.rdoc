@@ -12,7 +12,7 @@ Prerequisite:
 
 Installation:
 
-* fork this repository and bundle install all the gems.
+* Clone this repository and bundle install all the gems.
 
 * create a database named "mindfire"
 
