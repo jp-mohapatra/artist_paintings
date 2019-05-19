@@ -16,10 +16,10 @@ Installation:
 
 * create a database named "mindfire"
 
-* Migrate database by command
-	rake db:migrate
+* Migrate database by command 'rake db:migrate'
 
-* run the local server by 
-	rails s 
+* run the local server by 'rails s'
+
+* Open localhost:3000 on your browser.
 
 * That's it for the installation:)
