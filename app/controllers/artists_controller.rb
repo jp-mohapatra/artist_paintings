@@ -17,7 +17,7 @@ class ArtistsController < ApplicationController
 		password = params[:user][:password]
 		if saved
 			notice = "Updated Successfully!!"
-			if !@artist.valid_password?(password)
+			unless @artist.valid_password?(password)
 				@artist.update(password: password) 
 				notice += "\n Please login with your new password!!"
 				redirect_to root_path, :notice => notice
@@ -59,7 +59,7 @@ class ArtistsController < ApplicationController
 	def get_object
 		@artist = User.find_by(id: params[:id])
 
-		if !@artist.present?
+		unless @artist.present?
 			redirect_to root_path, alert: "Record not found!!"
 		end
 	end
